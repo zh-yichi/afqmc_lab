@@ -1,0 +1,84 @@
+------------------- AFQMC Sampling Started -------------------
+Hostname: sharmagroup-rn
+System Type: Linux
+Machine Type: x86_64
+Processor: x86_64
+Using GPU.
+System: Linux
+Node Name: sharmagroup-rn
+Release: 6.17.0-23-generic
+Version: #23~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Apr 14 16:11:48 UTC 2
+Machine: x86_64
+Processor: x86_64
+Trial: ccsd_pt2(norb=30, nelec=(6, 6), n_opt_iter=30, n_batch=1)
+Sampler: sampler_pt2(n_prop_steps=50, n_ene_blocks=1, n_sr_blocks=5, n_blocks=100, n_chol=148, n_micro_steps=10, n_macro_steps=5)
+norb: 30
+nelec: (6, 6)
+nchol: 148
+n_eql: 3
+n_prop_steps: 50
+n_ene_blocks: 1
+n_sr_blocks: 5
+n_blocks: 100
+n_walkers: 100
+n_batch: 1
+seed: 189
+walker_type: rhf
+trial: ccsd_pt2
+dt: 0.005
+use_gpu: True
+max_error: 0.001
+n_exp_terms: 6
+ene0: 0.0
+Propagating with 100 walkers
+Initial Orbital energy: -0.179067
+----------------------- Equilibration -----------------------
+Inv_T      E(Guide)   runTime
+ 0.00   -152.062489      4.37
+12.50   -152.300146      8.24 
+25.00   -152.293297     11.79 
+37.50   -152.300306     14.08 
+--------------------- Sampling Blocks -----------------------
+Target Final Error ~ 0.001000
+   N      E(Guide)     Error      E(Orb)     Error  Kill_WK      Time
+  10   -152.279415  0.004649   -0.181886  0.000482        0     19.18
+  20   -152.290320  0.004686   -0.182051  0.000417        0     20.15
+  30   -152.298507  0.004923   -0.182057  0.000350        0     21.11
+  40   -152.299093  0.004068   -0.182238  0.000312        0     22.08
+  50   -152.297151  0.003501   -0.182178  0.000270        0     23.05
+  60   -152.297349  0.003282   -0.182161  0.000236        0     24.02
+  70   -152.298743  0.002958   -0.182096  0.000213        0     24.99
+  80   -152.298530  0.002670   -0.182128  0.000191        0     25.96
+  90   -152.297274  0.002430   -0.182093  0.000180        0     26.93
+ 100   -152.298382  0.002340   -0.182305  0.000221        0     27.90
+---------------------- Post Propagation ---------------------
+Total number of samples 100
+Raw AFQMC/HF Energy: -152.298382 +/- 0.002340
+Raw AFQMC/pt2CCSD Orbital Energy (covariance): -0.182305 +/- 0.000221
+Raw AFQMC/pt2CCSD Orbital Energy (direct obs): -0.182305 +/- 0.000199
+--------------------- Clean Observation ---------------------
+Energy bound [-0.207036, -0.156497]
+Removed 0 Outliers
+Outliers Orbital Energy []
+Clean AFQMC/pt2CCSD Orbital Energy (covariance): -0.182305 +/- 0.000221
+Clean AFQMC/pt2CCSD Orbital Energy (direct obs): -0.182305 +/- 0.000199
+--------------------- Blocking Analysis ---------------------
+Warning: small dataset, relaxed min_nblocks to 10
+nsample = 100, max_block_size = 10, min_nblocks = 10
+Blk_SZ   NBlk   NSmp      Energy     Error    dError
+     1    100    100   -0.182186  0.000199  0.000014
+     2     50    100   -0.182220  0.000214  0.000022
+     3     33     99   -0.182149  0.000201  0.000025
+     4     25    100   -0.182241  0.000248  0.000036
+     5     20    100   -0.182262  0.000243  0.000039
+     6     16     96   -0.182068  0.000127  0.000023
+     7     14     98   -0.182164  0.000176  0.000034
+     8     12     96   -0.182065  0.000161  0.000034
+     9     11     99   -0.182174  0.000192  0.000043
+    10     10    100   -0.182282  0.000234  0.000055
+Fit: plateau = 0.000138 ± 0.000375
+     autocorrelation length ~ 11.3 blocks
+     plateau reached at block size ~ 1
+Clean AFQMC/pt2CCSD Orbital Energy (blocking): -0.182305 +/- 0.000138
+total run time: 27.90
+------------------ AFQMC Sampling Finished -------------------
