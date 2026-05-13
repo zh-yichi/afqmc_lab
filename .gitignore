@@ -6,6 +6,8 @@ __pycache__/
 .venv/
 .vscode/
 .idea/
-*DUMP
-*out
-*dat
+*DUMP*
+*.out
+*.dat
+*.bin
+*.npz

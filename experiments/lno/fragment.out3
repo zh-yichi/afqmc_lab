@@ -1,0 +1,117 @@
+---------------------------- AFQMC Sampling Started ----------------------------
+Hostname: sharmagroup-rn
+System Type: Linux
+Machine Type: x86_64
+Processor: x86_64
+Using GPU.
+System: Linux
+Node Name: sharmagroup-rn
+Release: 6.17.0-23-generic
+Version: #23~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Tue Apr 14 16:11:48 UTC 2
+Machine: x86_64
+Processor: x86_64
+Trial: uccsd_pt2(norb=(41, 40), nelec=(9, 6), n_batch=1, nchol_chunk=100, mix_precision=True)
+Sampler: sampler_pt2(n_prop_steps=50, n_blocks=100, n_chol=197)
+norb: (41, 40)
+nelec: (9, 6)
+nchol: 197
+n_eql: 3
+n_prop_steps: 50
+n_blocks: 100
+n_walkers: 100
+n_batch: 1
+seed: 176
+walker_type: uhf
+trial: uccsd_pt2
+dt: 0.005
+use_gpu: True
+max_error: 4.4721359549995795e-05
+mix_precision: True
+nchol_chunk: 100
+n_exp_terms: 6
+Propagating with 100 walkers
+Initial Orbital energy: -0.018123
+-------------------------------- Equilibration ---------------------------------
+inv_T        energy   runTime
+ 0.00   -151.156374      8.68
+ 0.50   -151.384207     10.78
+ 0.75   -151.478357     12.40
+ 1.00   -151.476212     12.58
+------------------------------- Sampling Blocks --------------------------------
+Target Final Error ~ 0.000045
+   N      E(Guide)     Error      E(Orb)     Error  Kill_WK      Time
+  10   -151.496403  0.005301   -0.018412  0.000096        0     22.96
+  20   -151.508088  0.004669   -0.018483  0.000058        0     26.22
+  30   -151.508851  0.003975   -0.018408  0.000047        0     29.47
+  40   -151.509074  0.003172   -0.018421  0.000046        0     32.73
+  50   -151.509358  0.002954   -0.018374  0.000052        0     35.98
+  60   -151.508848  0.002719   -0.018246  0.000066        0     39.24
+  70   -151.510086  0.002394   -0.018147  0.000068        0     42.49
+  80   -151.510358  0.002316   -0.018025  0.000079        0     45.74
+  90   -151.511153  0.002205   -0.017928  0.000081        0     49.00
+ 100   -151.511124  0.002238   -0.017789  0.000087        0     52.25
+------------------------------- Post Propagation -------------------------------
+Total number of samples 100
+Raw AFQMC/HF Energy: -151.511124 +/- 0.002238
+Raw AFQMC/pt2CCSD Orbital Energy (covariance): -0.017789 +/- 0.000087
+Raw AFQMC/pt2CCSD Orbital Energy (direct obs): -0.017789 +/- 0.000073
+------------------------------ Clean Observation -------------------------------
+Energy bound [-0.033421, -0.002591]
+Removed 0 Outliers
+Outliers Orbital Energy []
+Clean AFQMC/pt2CCSD Orbital Energy (covariance): -0.017789 +/- 0.000087
+Clean AFQMC/pt2CCSD Orbital Energy (direct obs): -0.017789 +/- 0.000073
+------------------------------ Blocking Analysis -------------------------------
+Warning: small dataset, relaxed min_nblocks to 10
+nsample = 100, max_block_size = 10, min_nblocks = 10
+Blk_SZ   NBlk   NSmp      Energy     Error    dError
+     1    100    100   -0.017803  0.000073  0.000005
+     2     50    100   -0.017804  0.000097  0.000010
+     3     33     99   -0.017809  0.000118  0.000015
+     4     25    100   -0.017808  0.000133  0.000019
+     5     20    100   -0.017809  0.000147  0.000024
+     6     16     96   -0.017850  0.000160  0.000029
+     7     14     98   -0.017823  0.000176  0.000034
+     8     12     96   -0.017852  0.000183  0.000039
+     9     11     99   -0.017814  0.000203  0.000045
+    10     10    100   -0.017811  0.000207  0.000049
+Fit: plateau = 0.000269 ± 0.000147
+     autocorrelation length ~ 8.1 blocks
+     plateau reached at block size ~ 36
+     !!!Failed to reach plateau in blocking
+     Return max block error
+Blocked AFQMC/pt2CCSD Orbital Energy: -0.017789 +/- 0.000207
+total run time: 52.25
+--------------------------- AFQMC Sampling Finished ----------------------------
+
+============================== Fragment3 Results ===============================
+	 Center Atom H
+	AOs with contribution > 0.01
+        AO Label     Amp
+      2 H 1s      0.3802
+      2 H 2s      0.2786
+      0 O 3px     0.1142
+      0 O 3s      0.0668
+      1 H 2s      0.0456
+      3 O 3px     0.0290
+      2 H 2px     0.0279
+     0 O 3dx2-y2  0.0197
+      4 H 2s      0.0103
+AOs with contribution > 0.01
+        AO Label     Amp
+      2 H 1s      0.3836
+      2 H 2s      0.2766
+      0 O 3px     0.1146
+      0 O 3s      0.0668
+      1 H 2s      0.0455
+      3 O 3px     0.0294
+      2 H 2px     0.0283
+     0 O 3dx2-y2  0.0200
+--------------------------------------------------------------------------------
+	 LNO-Active Space electrons: 15 | orbitals: 81 
+	 LNO-MP2 Orbital Energy:   -0.01704741 
+	 LNO-CCSD Orbital Energy:  -0.01812326 
+	 LNO-AFQMC Orbital Energy: -0.017789 +/- 0.000207 
+	 LNO-CCSD Time:  1.05 
+	 LNO-AFQMC Time: 52.25 
+================================================================================
