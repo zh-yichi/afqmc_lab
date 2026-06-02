@@ -32,16 +32,16 @@ for nc in nc_list:
     mf.kernel()
 
     # scf stability
-    stable = False
-    while not stable:
-        print(f'mf stability test')
-        if not stable:
-            mo_i, _, stable,_ = mf.stability(return_status=True)
-            dm = mf.make_rdm1(mo_i,mf.mo_occ)
-            mf.kernel(dm0=dm)
-        elif stable:
-            print(f'mf energy: {mf.e_tot}, stability {stable}')
-            break
+stable = False
+while not stable:
+    print(f'mf stability test')
+    if not stable:
+        mo_i, _, stable,_ = mf.stability(return_status=True)
+        dm = mf.make_rdm1(mo_i,mf.mo_occ)
+        mf.kernel(dm0=dm)
+    elif stable:
+        print(f'mf energy: {mf.e_tot}, stability {stable}')
+        break
     
     mycc = cc.CCSD(mf)
     mycc.set_frozen()

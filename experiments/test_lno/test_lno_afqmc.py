@@ -15,7 +15,7 @@ spin = 0 # spin per monomer
 frozen = 0 # frozen orbital per monomer
 elmt = 'N'
 unit = 'B'
-basis = 'sto6g'
+basis = 'ccpvdz'
 atoms = ""
 for n in range(nc*na):
     shift = ((n - n % na) // na) * (d-a)
@@ -32,7 +32,7 @@ mol = gto.M(atom=atoms,
             max_memory=40000,
             )
 
-mf = scf.RHF(mol).density_fit()
+mf = scf.UHF(mol).density_fit()
 # mf.chkfile = '../../../pyscf/c3/mf.chk'
 # mf.init_guess = 'chk'
 mf.kernel()
@@ -49,15 +49,16 @@ options = {
            'n_prop_steps': 50,
            'n_blocks': 50,
            'n_walkers': 300,
-           'nchol_chunk': 120,
-           'mix_precision': False,
+           'max_memory': 2000,
+           'mix_precision': True,
            'n_batch': 1,
            'seed': 17,
-           'walker_type': 'rhf',
-           'trial': 'pt2ccsd',
-           'dt':0.005,
-           'use_gpu': False,
+           'walker_type': 'uhf',
+           'trial': 'upt2ccsd',
            }
+
+import numpy as np
+np.show_config()
 
 lno_afqmc.run_afqmc(
               mf,
@@ -67,6 +68,6 @@ lno_afqmc.run_afqmc(
               thresh = lno_thresh,
               qmc_options = options,
               target_sto_error = 5e-4,
-              run_frg_list = [0],
+              run_frag_list = [0,1,2],
               atom_group = atm_center,
               )
