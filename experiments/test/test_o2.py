@@ -25,20 +25,23 @@ for nc in m_list:
 
     # nfrozen = 2*nc
     spin = 2*nc
-    mol = gto.M(atom=atoms, basis="ccpvdz", spin=spin, verbose=4)
+    mol = gto.M(atom=atoms, basis="sto6g", spin=spin, verbose=4)
     mol.build()
 
     mf = scf.UHF(mol)
     mf.kernel()
-    mo1 = mf.stability()[0]
-    mf = mf.newton().run(mo1, mf.mo_occ)
-    mo1 = mf.stability()[0]
-    mf = mf.newton().run(mo1, mf.mo_occ)
-    mo1 = mf.stability()[0]
-    mf = mf.newton().run(mo1, mf.mo_occ)
-    mo1 = mf.stability()[0]
-    mf = mf.newton().run(mo1, mf.mo_occ)
-    mf.stability()
+    
+    stable = False
+    while not stable:
+        print(f'mean-field stability test')
+        if not stable:
+            mo_i, _, stable,_ = mf.stability(return_status=True)
+            dm = mf.make_rdm1(mo_i,mf.mo_occ)
+            mf.kernel(dm0=dm)
+        elif stable:
+            print(f'UHF Energy: {umf.e_tot}, stability {stable}')
+            break
+
 
     mycc = cc.CCSD(mf)
     mycc.set_frozen()
@@ -52,22 +55,9 @@ for nc in m_list:
                'max_memory': 3000,
                'seed': 17,
                'walker_type': 'uhf',
-               'trial': 'upt2ccsd_eff',
+               'trial': 'upt2ccsd',
                }
 
     from afqmc import integral, launch_afqmc
     integral.prep_integral(mycc)
-    launch_afqmc.ph_afqmc(options)
-
-    options = {'eql_time': 10,
-               'n_blocks': 100,
-               'n_walkers': 300,
-               'max_error': 0.0,
-               'mix_precision': False,
-               'nchol_chunk': 30,
-               'max_memory': 3000,
-               'seed': 17,
-               'walker_type': 'uhf',
-               'trial': 'upt2ccsd_ad',
-               }
     launch_afqmc.ph_afqmc(options)

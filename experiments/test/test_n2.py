@@ -10,35 +10,36 @@ import numpy as np
 
 d = 100
 
-o2 = '''
-N 0.0 0.0 0.0
-N 0.0 0.0 1.20577
-'''
-
 m_list = [1]
 for nc in m_list:
     atoms = ""
     for n in range(nc):
         shift = n*d
-        atoms += f'O {0.0+shift} 0.0 0.0     \n'
-        atoms += f'O {0.0+shift} 0.0 1.20577 \n'
+        atoms += f'N {0.0+shift} 0.0 0.0     \n'
+        atoms += f'N {0.0+shift} 0.0 3.0 \n'
 
     # nfrozen = 2*nc
     spin = 0
-    mol = gto.M(atom=atoms, basis="ccpvdz", spin=spin, verbose=4)
+    mol = gto.M(atom=atoms, 
+                unit='b',
+                basis="ccpvdz", 
+                spin=spin, 
+                verbose=4)
     mol.build()
 
-    mf = scf.RHF(mol)
+    mf = scf.UHF(mol)
     mf.kernel()
-    mo1 = mf.stability()[0]
-    mf = mf.newton().run(mo1, mf.mo_occ)
-    mo1 = mf.stability()[0]
-    mf = mf.newton().run(mo1, mf.mo_occ)
-    mo1 = mf.stability()[0]
-    mf = mf.newton().run(mo1, mf.mo_occ)
-    mo1 = mf.stability()[0]
-    mf = mf.newton().run(mo1, mf.mo_occ)
-    mf.stability()
+
+    stable = False
+    for i in range(10):
+        print(f'mf stability test {i+1}')
+        if not stable:
+            mo_i, _, stable,_ = mf.stability(return_status=True)
+            dm = mf.make_rdm1(mo_i,mf.mo_occ)
+            mf.kernel(dm0=dm)
+        elif stable:
+            print(f'mf energy: {mf.e_tot}, stability {stable}')
+            break
 
     mycc = cc.CCSD(mf)
     mycc.set_frozen()
