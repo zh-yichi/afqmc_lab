@@ -28,7 +28,7 @@ for nc in m_list:
     mol = gto.M(atom=atoms, basis="sto6g", spin=spin, verbose=4)
     mol.build()
 
-    mf = scf.UHF(mol)
+    mf = scf.UHF(mol)#.density_fit()
     mf.kernel()
     
     stable = False
