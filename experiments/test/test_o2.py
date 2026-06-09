@@ -39,7 +39,7 @@ for nc in m_list:
             dm = mf.make_rdm1(mo_i,mf.mo_occ)
             mf.kernel(dm0=dm)
         elif stable:
-            print(f'UHF Energy: {umf.e_tot}, stability {stable}')
+            print(f'UHF Energy: {mf.e_tot}, stability {stable}')
             break
 
 
@@ -55,9 +55,9 @@ for nc in m_list:
                'max_memory': 3000,
                'seed': 17,
                'walker_type': 'uhf',
-               'trial': 'upt2ccsd',
+               'trial': 'ucisd',
                }
 
     from afqmc import integral, launch_afqmc
-    integral.prep_integral(mycc)
+    integral.prep_integral(mycc, chol_cut=1e-6)
     launch_afqmc.ph_afqmc(options)

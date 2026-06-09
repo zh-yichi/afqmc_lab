@@ -11,7 +11,7 @@ import numpy as np
 d = 2 # distance between each cluster
 unit = 'bohr' # unit of length
 na = 2  # size of a cluster (monomer)
-nc = 10 # set as integer multiple of monomers
+nc = 1 # set as integer multiple of monomers
 spin = 0 # spin per monomer
 #frozen = 0 # frozen orbital per monomer
 elmt = 'H'
@@ -50,7 +50,7 @@ for a in bond_list:
                'mix_precision': False,
                'seed': 17,
                'walker_type': 'uhf',
-               'trial': 'upt2ccsd',
+               'trial': 'ucisd',
                'free_projection': False,
                }
 
