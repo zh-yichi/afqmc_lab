@@ -46,18 +46,19 @@ for nc in m_list:
     mycc = cc.CCSD(mf)
     mycc.set_frozen()
     mycc.kernel()
-
+    
     options = {'eql_time': 10,
                'n_blocks': 100,
                'n_walkers': 300,
                'max_error': 0.0,
                'nchol_chunk': 30,
                'max_memory': 3000,
-               'seed': 17,
+               'seed': 1,
                'walker_type': 'uhf',
                'trial': 'ucisd',
+               'mix_precision': False,
                }
 
     from afqmc import integral, launch_afqmc
-    integral.prep_integral(mycc, chol_cut=1e-6)
+    integral.prep_integral(mycc, chol_cut=1e-5)
     launch_afqmc.ph_afqmc(options)

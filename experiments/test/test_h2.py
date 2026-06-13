@@ -25,7 +25,7 @@ for a in bond_list:
     mol = gto.M(atom=atoms, basis="sto6g",spin=spin*nc, unit=unit, verbose=4)
     mol.build()
 
-    mf = scf.UHF(mol)#.density_fit()
+    mf = scf.RHF(mol)#.density_fit()
     mf.kernel()
 
     stable = False
@@ -49,8 +49,8 @@ for a in bond_list:
                'max_error': 0.0,
                'mix_precision': False,
                'seed': 17,
-               'walker_type': 'uhf',
-               'trial': 'ucisd',
+               'walker_type': 'rhf',
+               'trial': 'pt2ccsd',
                'free_projection': False,
                }
 
