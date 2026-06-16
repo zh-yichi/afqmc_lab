@@ -13,7 +13,7 @@ na = 2 # size of a cluster (monomer)
 nc = 5 # set as integer multiple of monomers
 spin = 0*nc # spin per monomer
 frozen = 0 # frozen orbital per monomer
-elmt = 'N'
+elmt = 'H'
 unit = 'B'
 basis = 'sto6g'
 atoms = ""
@@ -80,7 +80,7 @@ lno_afqmc.run_afqmc(
               qmc_options = options,
               chol_cut = 1e-5,
               target_sto_error = 5e-4,
-              run_frag_list = [0],
+              run_frag_list = None,
               atom_group = atm_center,
-              plot_las = True,
+              plot_las = False,
               )
