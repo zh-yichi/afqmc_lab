@@ -8,57 +8,64 @@ from pyscf import gto, scf, cc
 import os
 import numpy as np
 
-d = 100
+####  test H2 monomers ####
+a = 2 # bond length in a cluster
+d = 100 # distance between each cluster
+unit = 'b' # unit of length
+na = 2 # size of a cluster (monomer)
+nc = 1 # set as integer multiple of monomers
+spin = 2 # spin per monomer
+frozen = 0 # frozen orbital per monomer
+elmt = 'O'
+unit = 'B'
+basis = 'sto6g'
+atoms = ""
+for n in range(nc*na):
+    shift = ((n - n % na) // na) * (d-a)
+    atoms += f"{elmt} {n*a+shift:.5f} 0.00000 0.00000 \n"
+###########################
 
-o2 = '''
-O 0.0 0.0 0.0
-O 0.0 0.0 1.20577
-'''
+mol = gto.M(atom=atoms,
+            basis="sto6g",
+            verbose=4,
+            unit=unit,
+            symmetry=0,
+            charge=0,
+            spin=spin*nc,
+            max_memory=40000,
+            )
 
-m_list = [1]
-for nc in m_list:
-    atoms = ""
-    for n in range(nc):
-        shift = n*d
-        atoms += f'O {0.0+shift} 0.0 0.0     \n'
-        atoms += f'O {0.0+shift} 0.0 1.20577 \n'
+mf = scf.UHF(mol).density_fit()
+mf.kernel()
 
-    # nfrozen = 2*nc
-    spin = 2*nc
-    mol = gto.M(atom=atoms, basis="sto6g", spin=spin, verbose=4)
-    mol.build()
-
-    mf = scf.UHF(mol)#.density_fit()
-    mf.kernel()
-    
-    stable = False
-    while not stable:
-        print(f'mean-field stability test')
-        if not stable:
-            mo_i, _, stable,_ = mf.stability(return_status=True)
-            dm = mf.make_rdm1(mo_i,mf.mo_occ)
-            mf.kernel(dm0=dm)
-        elif stable:
-            print(f'UHF Energy: {mf.e_tot}, stability {stable}')
-            break
+stable = False
+while not stable:
+    print(f'mean-field stability test')
+    if not stable:
+        mo_i, _, stable,_ = mf.stability(return_status=True)
+        dm = mf.make_rdm1(mo_i,mf.mo_occ)
+        mf.kernel(dm0=dm)
+    elif stable:
+        print(f'UHF Energy: {mf.e_tot}, stability {stable}')
+        break
 
 
-    mycc = cc.CCSD(mf)
-    mycc.set_frozen()
-    mycc.kernel()
-    
-    options = {'eql_time': 10,
-               'n_blocks': 100,
-               'n_walkers': 300,
-               'max_error': 0.0,
-               'nchol_chunk': 30,
-               'max_memory': 3000,
-               'seed': 1,
-               'walker_type': 'uhf',
-               'trial': 'ucisd',
-               'mix_precision': False,
-               }
+mycc = cc.CCSD(mf)
+mycc.set_frozen()
+mycc.kernel()
 
-    from afqmc import integral, launch_afqmc
-    integral.prep_integral(mycc, chol_cut=1e-5)
-    launch_afqmc.ph_afqmc(options)
+options = {'eql_time': 20,
+            'n_blocks': 1000,
+            'n_walkers': 300,
+            'max_error': 0.0,
+            'nchol_chunk': 30,
+            'max_memory': 3000,
+            'seed': 1,
+            'walker_type': 'uhf',
+            'trial': 'upt2ccsd',
+            'mix_precision': False,
+            }
+
+from afqmc import integral, launch_afqmc
+integral.prep_integral(mycc, chol_cut=1e-5)
+launch_afqmc.ph_afqmc(options)
