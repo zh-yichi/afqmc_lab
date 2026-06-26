@@ -2,7 +2,7 @@ import numpy as np
 from pyscf import gto, scf, lo
 
 lno_num = 4
-lno_list = [3e-4,1e-4,3e-5,1e-6]
+lno_list = [3e-4,1e-4,3e-5,0.0]
 lno_thresh = lno_list[lno_num-1]
 
 ####  test H2 monomers ####
