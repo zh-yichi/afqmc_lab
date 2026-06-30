@@ -9,7 +9,7 @@ import os
 import numpy as np
 
 ####  test H2 monomers ####
-a = 2 # bond length in a cluster
+a = 2.2 # bond length in a cluster
 d = 100 # distance between each cluster
 unit = 'b' # unit of length
 na = 2 # size of a cluster (monomer)
@@ -54,9 +54,9 @@ mycc = cc.CCSD(mf)
 mycc.set_frozen()
 mycc.kernel()
 
-options = {'eql_time': 20,
-            'n_blocks': 1000,
-            'n_walkers': 300,
+options = {'eql_time': 10,
+            'n_blocks': 50,
+            'n_walkers': 10,
             'max_error': 0.0,
             'nchol_chunk': 30,
             'max_memory': 3000,
