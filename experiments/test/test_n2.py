@@ -16,7 +16,7 @@ for nc in m_list:
     for n in range(nc):
         shift = n*d
         atoms += f'N {0.0+shift} 0.0 0.0     \n'
-        atoms += f'N {0.0+shift} 0.0 3.0 \n'
+        atoms += f'N {0.0+shift} 0.0 2.0 \n'
 
     # nfrozen = 2*nc
     spin = 0
@@ -27,7 +27,7 @@ for nc in m_list:
                 verbose=4)
     mol.build()
 
-    mf = scf.UHF(mol)
+    mf = scf.RHF(mol)
     mf.kernel()
 
     stable = False
@@ -45,30 +45,15 @@ for nc in m_list:
     mycc.set_frozen()
     mycc.kernel()
 
-    options = {'eql_time': 10,
-               'n_blocks': 100,
+    options = {'n_blocks': 300,
                'n_walkers': 300,
-               'max_error': 0.0,
-               'nchol_chunk': 30,
-               'max_memory': 3000,
-               'seed': 17,
-               'walker_type': 'rhf',
-               'trial': 'pt2ccsd_ad',
-               }
-
-    from afqmc import integral, launch_afqmc
-    integral.prep_integral(mycc)
-    #launch_afqmc.ph_afqmc(options)
-
-    options = {'eql_time': 10,
-               'n_blocks': 100,
-               'n_walkers': 300,
-               'max_error': 0.0,
-               'mix_precision': False,
                'nchol_chunk': 30,
                'max_memory': 3000,
                'seed': 17,
                'walker_type': 'rhf',
                'trial': 'pt2ccsd',
                }
-    #launch_afqmc.ph_afqmc(options)
+
+    from afqmc import integral, launch_afqmc
+    integral.prep_integral(mycc)
+    launch_afqmc.ph_afqmc(options)
