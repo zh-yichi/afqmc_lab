@@ -10,7 +10,7 @@ import numpy as np
 
 ####  test H2 monomers ####
 a = 1.20577 # bond length in a cluster
-d = 100 # distance between each cluster
+d = 4 # distance between each cluster
 unit = 'A' # unit of length
 na = 2 # size of a cluster (monomer)
 nc = 1 # set as integer multiple of monomers
@@ -34,7 +34,9 @@ mol = gto.M(atom=atoms,
             max_memory=40000,
             )
 
-mf = scf.UHF(mol)#.density_fit()
+mf = scf.UHF(mol).density_fit()
+# mf.chkfile = './mf.chk'
+# mf.init_guess = 'chk'
 mf.kernel()
 
 stable = False
@@ -53,7 +55,7 @@ mycc = cc.CCSD(mf)
 mycc.set_frozen()
 mycc.kernel()
 
-options =  {'n_blocks': 500,
+options =  {'n_blocks': 1000,
             'n_walkers': 300,
             'nchol_chunk': 30,
             'max_memory': 3000,

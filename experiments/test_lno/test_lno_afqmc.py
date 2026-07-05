@@ -1,19 +1,18 @@
 import numpy as np
 from pyscf import gto, scf, lo
 
-lno_num = 4
-lno_list = [3e-4,1e-4,3e-5,0.0]
+lno_num = 5
+lno_list = [3e-4,1e-4,3e-5,1e-6,3e-7]
 lno_thresh = lno_list[lno_num-1]
 
 ####  test H2 monomers ####
-a = 2 # bond length in a cluster
-d = 100 # distance between each cluster
-unit = 'b' # unit of length
+a = 1.20577 # bond length in a cluster
+d = 5 # distance between each cluster
+unit = 'A' # unit of length
 na = 2 # size of a cluster (monomer)
-nc = 5 # set as integer multiple of monomers
+nc = 1 # set as integer multiple of monomers
 spin = 2 # spin per monomer
 elmt = 'O'
-unit = 'B'
 basis = 'sto6g'
 atoms = ""
 for n in range(nc*na):
@@ -22,13 +21,13 @@ for n in range(nc*na):
 ###########################
 
 mol = gto.M(atom=atoms,
-            basis="sto6g",
+            basis=basis,
             verbose=4,
             unit=unit,
             symmetry=0,
             charge=0,
             spin=spin*nc,
-            max_memory=40000,
+            max_memory=20000,
             )
 
 mf = scf.UHF(mol).density_fit()
@@ -53,7 +52,7 @@ lo_coeff, frag_lolist, atm_center = tools.iao_localization(mf)
 from afqmc.lno_afqmc import lno_afqmc
 options = {
            'n_prop_steps': 50,
-           'n_blocks': 600,
+           'n_blocks': 1000,
            'n_walkers': 300,
            'max_memory': 2000,
            'mix_precision': False,
@@ -70,7 +69,7 @@ lno_afqmc.run_afqmc(
               nfrozen = elements.chemcore(mol),
               thresh = lno_thresh,
               qmc_options = options,
-              target_sto_error = 1e-6,
-              run_frag_list = [0,1],
+              target_sto_error = 1e-4,
+              run_frag_list = None,
               atom_group = atm_center,
               )

@@ -8,7 +8,9 @@ from pyscf import gto, scf, cc
 import os
 import numpy as np
 
-####  test H2 monomers ####
+from afqmc.corr_sample import integral, launch_afqmc
+
+####  test monomers ####
 a = 1.20577 # bond length in a cluster
 d = 100 # distance between each cluster
 unit = 'A' # unit of length
@@ -17,6 +19,7 @@ nc = 1 # set as integer multiple of monomers
 spin = 2 # spin per monomer
 frozen = 0 # frozen orbital per monomer
 elmt = 'O'
+sym = False
 basis = 'sto6g'
 atoms = ""
 for n in range(nc*na):
@@ -25,18 +28,16 @@ for n in range(nc*na):
 ###########################
 
 mol1 = gto.M(atom=atoms,
-            basis="sto6g",
+            basis=basis,
             verbose=4,
             unit=unit,
-            symmetry=0,
+            symmetry=sym,
             charge=0,
             spin=spin*nc,
             max_memory=40000,
             )
 
-mf1 = scf.UHF(mol1)#.density_fit()
-mf1.chkfile = './mf.chk1'
-mf1.init_guess = 'chk'
+mf1 = scf.UHF(mol1).density_fit()
 mf1.kernel()
 
 stable = False
@@ -56,37 +57,40 @@ mycc1.set_frozen()
 mycc1.kernel()
 
 mol2 = gto.M(atom=atoms,
-            basis="sto6g",
+            basis=basis,
             verbose=4,
             unit=unit,
-            symmetry=0,
+            symmetry=sym,
             charge=0,
-            spin=0*nc,
+            spin=spin*nc,
             max_memory=40000,
             )
 
-mf2 = scf.UHF(mol2)#.density_fit()
-mf2.chkfile = './mf.chk2'
-mf2.init_guess = 'chk'
-mf2.kernel()
+mf2 = scf.UHF(mol2).density_fit()
+mf2.kernel(dm0=mf1.make_rdm1())
 
-# stable = False
-# while not stable:
-#     print(f'mean-field stability test')
-#     if not stable:
-#         mo_i, _, stable,_ = mf2.stability(return_status=True)
-#         dm = mf2.make_rdm1(mo_i,mf2.mo_occ)
-#         mf2.kernel(dm0=dm)
-#     elif stable:
-#         print(f'HF Energy: {mf2.e_tot}, stability {stable}')
-#         break
+stable = False
+while not stable:
+    print(f'mean-field stability test')
+    if not stable:
+        mo_i, _, stable,_ = mf2.stability(return_status=True)
+        dm = mf2.make_rdm1(mo_i,mf2.mo_occ)
+        mf2.kernel(dm0=dm)
+    elif stable:
+        print(f'HF Energy: {mf2.e_tot}, stability {stable}')
+        break
+
+print(f"mf1 energy = {mf1.e_tot:.8f} | mf2 energy = {mf2.e_tot:.8f}")
+from pyscf.data import elements
+mf2.mo_coeff = integral.align_mo(mf1, mf2, frozen = elements.chemcore(mol1), report=True)
 
 mycc2 = cc.CCSD(mf2)
 mycc2.set_frozen()
 mycc2.kernel()
 
 options =  {'eql_time': 50,
-            'n_blocks': 500,
+            'n_prop_step': 30,
+            'n_blocks': 20,
             'n_walkers': 300,
             'nchol_chunk': 30,
             'max_memory': 3000,
@@ -95,14 +99,12 @@ options =  {'eql_time': 50,
             'mix_precision': False,
             }
 
-from afqmc import integral, launch_afqmc
-integral.prep_integral(mycc1, chol_cut=1e-5)
+from afqmc.corr_sample import integral, launch_afqmc
+integral.prep_integral(mycc1, mycc2, chol_cut=1e-5, 
+                       norb_frozen1=elements.chemcore(mol1),
+                       norb_frozen2=elements.chemcore(mol2),
+                       )
 launch_afqmc.ph_afqmc(options)
-os.system('mv afqmc.out afqmc.out1')
-
-options["seed"] = 18
-integral.prep_integral(mycc2, chol_cut=1e-5)
-launch_afqmc.ph_afqmc(options)
-os.system('mv afqmc.out afqmc.out2')
+os.system('mv afqmc.out cs_afqmc.out')
 
 

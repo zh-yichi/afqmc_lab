@@ -10,7 +10,7 @@ import numpy as np
 
 from afqmc.corr_sample import integral, launch_afqmc
 
-####  test H2 monomers ####
+####  test monomers ####
 a = 1.20577 # bond length in a cluster
 d = 100 # distance between each cluster
 unit = 'A' # unit of length
@@ -19,7 +19,7 @@ nc = 1 # set as integer multiple of monomers
 spin = 2 # spin per monomer
 frozen = 0 # frozen orbital per monomer
 elmt = 'O'
-basis = 'ccpvdz'
+basis = 'sto6g'
 atoms = ""
 for n in range(nc*na):
     shift = ((n - n % na) // na) * (d-a)
@@ -27,7 +27,7 @@ for n in range(nc*na):
 ###########################
 
 mol1 = gto.M(atom=atoms,
-            basis="sto6g",
+            basis=basis,
             verbose=4,
             unit=unit,
             symmetry=0,
@@ -36,9 +36,7 @@ mol1 = gto.M(atom=atoms,
             max_memory=40000,
             )
 
-mf1 = scf.UHF(mol1)#.density_fit()
-mf1.chkfile = './mf.chk1'
-mf1.init_guess = 'chk'
+mf1 = scf.UHF(mol1).density_fit()
 mf1.kernel()
 
 stable = False
@@ -53,12 +51,12 @@ while not stable:
         break
 
 
-mycc1 = cc.CCSD(mf1)
-mycc1.set_frozen()
-mycc1.kernel()
+# mycc1 = cc.CCSD(mf1)
+# mycc1.set_frozen()
+# mycc1.kernel()
 
 mol2 = gto.M(atom=atoms,
-            basis="sto6g",
+            basis=basis,
             verbose=4,
             unit=unit,
             symmetry=0,
@@ -67,9 +65,7 @@ mol2 = gto.M(atom=atoms,
             max_memory=40000,
             )
 
-mf2 = scf.UHF(mol2)#.density_fit()
-# mf2.chkfile = './mf.chk2'
-# mf2.init_guess = 'chk'
+mf2 = scf.UHF(mol2).density_fit()
 mf2.kernel()
 
 stable = False
@@ -83,26 +79,25 @@ while not stable:
         print(f'HF Energy: {mf2.e_tot}, stability {stable}')
         break
 
-print(np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
-print(np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
+print(f"mf1 energy = {mf1.e_tot:.8f} | mf2 energy = {mf2.e_tot:.8f}")
+print("before Procruste")
+print("Alpha Norm : ", np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
+print(" Beta Norm : ", np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
+mf2.mo_coeff = integral.match_mo(mf1, mf2)
+print("Alpha Norm : ", np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
+print(" Beta Norm : ", np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
 
-mf2.mo_coeff = integral.match_mocoeff(mf2, mf1)
-print(np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
-print(np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
 
-mf2.mo_coeff = integral.match_mocoeff(mf2, mf1)
-print(np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
-print(np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
 
-mf2.mo_coeff = integral.match_mocoeff(mf2, mf1)
-print(np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
-print(np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
+# mf2.kernel()
 
-mycc2 = cc.CCSD(mf2)
-mycc2.set_frozen()
-mycc2.kernel()
+# mycc2 = cc.CCSD(mf2)
+# mycc2.set_frozen()
+# mycc2.kernel()
 
-# options =  {'n_blocks': 500,
+# options =  {'eql_time': 50,
+#             'n_prop_step': 30,
+#             'n_blocks': 20,
 #             'n_walkers': 300,
 #             'nchol_chunk': 30,
 #             'max_memory': 3000,

@@ -1,9 +1,9 @@
-options =  {'n_blocks': 500,
+options =  {'n_blocks': 600,
             'n_walkers': 300,
             'nchol_chunk': 30,
             'max_memory': 3000,
             'seed': 17,
-            'trial': 'pt2ccsd_bar',
+            'trial': 'upt2ccsd',
             'mix_precision': False,
             }
 
