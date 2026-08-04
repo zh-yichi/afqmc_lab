@@ -40,10 +40,10 @@ from afqmc.lno_afqmc import lno_afqmc, tools
 lo_coeff, frag_lolist, atm_center = tools.iao_localization(mf)
 
 options = {
-           'eql_time': 40,
+           'eql_time': 10,
            'n_prop_steps': 50,
-           'n_blocks': 600,
-           'n_walkers': 300,
+           'n_blocks': 100,
+           'n_walkers': 100,
            'mix_precision': 'False',
            'seed': 17,
            'walker_type': 'rhf',
@@ -59,6 +59,6 @@ lno_afqmc.run_afqmc(
               qmc_options = options,
               chol_cut = 1e-5,
               target_sto_error = 1e-5,
-              run_frag_list = [0,1],
+              run_frag_list = [0],
               atom_group = atm_center,
               )
