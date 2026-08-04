@@ -15,7 +15,7 @@ na = 2 # size of a cluster (monomer)
 nc_list = [1] # set as integer multiple of monomers
 spin = 0 # spin per monomer
 frozen = 0 # frozen orbital per monomer
-elmt = 'H'
+elmt = 'O'
 unit = 'B'
 basis = 'sto6g'
 for nc in nc_list:

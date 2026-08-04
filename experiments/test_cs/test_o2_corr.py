@@ -51,9 +51,20 @@ while not stable:
         break
 
 
-# mycc1 = cc.CCSD(mf1)
-# mycc1.set_frozen()
-# mycc1.kernel()
+def make_singlet_occ(mo_occ):
+    mo_occ = np.asarray(mo_occ)
+    nelec = int(round(mo_occ.sum()))
+    if nelec % 2 != 0:
+        raise ValueError(f"Total electron count ({nelec}) is odd; "
+                         "no closed-shell singlet possible.")
+    nocc = nelec // 2                    # electrons per spin
+    new_occ = np.zeros_like(mo_occ)
+    new_occ[0, :nocc] = 1.0              # alpha
+    new_occ[1, :nocc] = 1.0              # beta
+    return new_occ
+
+mo_occ_singlet = make_singlet_occ(mf1.mo_occ)
+print(mo_occ_singlet)
 
 mol2 = gto.M(atom=atoms,
             basis=basis,
@@ -61,12 +72,12 @@ mol2 = gto.M(atom=atoms,
             unit=unit,
             symmetry=0,
             charge=0,
-            spin=spin*nc,
+            spin=0*nc,
             max_memory=40000,
             )
 
 mf2 = scf.UHF(mol2).density_fit()
-mf2.kernel()
+mf2.kernel(dm0 = mf1.make_rdm1(mo_coeff=mf1.mo_coeff, mo_occ=mo_occ_singlet))
 
 stable = False
 while not stable:
@@ -79,13 +90,13 @@ while not stable:
         print(f'HF Energy: {mf2.e_tot}, stability {stable}')
         break
 
-print(f"mf1 energy = {mf1.e_tot:.8f} | mf2 energy = {mf2.e_tot:.8f}")
-print("before Procruste")
-print("Alpha Norm : ", np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
-print(" Beta Norm : ", np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
-mf2.mo_coeff = integral.match_mo(mf1, mf2)
-print("Alpha Norm : ", np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
-print(" Beta Norm : ", np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
+# print(f"mf1 energy = {mf1.e_tot:.8f} | mf2 energy = {mf2.e_tot:.8f}")
+# print("before Procruste")
+# print("Alpha Norm : ", np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
+# print(" Beta Norm : ", np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
+# mf2.mo_coeff = integral.match_mo(mf1, mf2)
+# print("Alpha Norm : ", np.linalg.norm(mf1.mo_coeff[0] - mf2.mo_coeff[0]))
+# print(" Beta Norm : ", np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
 
 
 
@@ -95,20 +106,20 @@ print(" Beta Norm : ", np.linalg.norm(mf1.mo_coeff[1] - mf2.mo_coeff[1]))
 # mycc2.set_frozen()
 # mycc2.kernel()
 
-# options =  {'eql_time': 50,
-#             'n_prop_step': 30,
-#             'n_blocks': 20,
-#             'n_walkers': 300,
-#             'nchol_chunk': 30,
-#             'max_memory': 3000,
-#             'seed': 17,
-#             'trial': 'uhf',
-#             'mix_precision': False,
-#             }
+options =  {'eql_time': 50,
+            'n_prop_step': 30,
+            'n_blocks': 20,
+            'n_walkers': 300,
+            'nchol_chunk': 30,
+            'max_memory': 3000,
+            'seed': 17,
+            'trial': 'uhf',
+            'mix_precision': False,
+            }
 
-# from afqmc.corr_sample import integral, launch_afqmc
-# integral.prep_integral(mycc1, mycc2, chol_cut=1e-5)
-# launch_afqmc.ph_afqmc(options)
-# os.system('mv afqmc.out cs_afqmc.out')
+from afqmc.corr_sample import integral, launch_afqmc
+integral.prep_integral(mf1, mf1, chol_cut1=1e-4, chol_cut2=1e-8)
+launch_afqmc.ph_afqmc(options)
+os.system('mv afqmc.out cs_afqmc.out')
 
 

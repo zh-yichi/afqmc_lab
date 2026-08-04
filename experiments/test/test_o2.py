@@ -10,7 +10,7 @@ import numpy as np
 
 ####  test H2 monomers ####
 a = 1.20577 # bond length in a cluster
-d = 4 # distance between each cluster
+d = 100 # distance between each cluster
 unit = 'A' # unit of length
 na = 2 # size of a cluster (monomer)
 nc = 1 # set as integer multiple of monomers
@@ -25,7 +25,7 @@ for n in range(nc*na):
 ###########################
 
 mol = gto.M(atom=atoms,
-            basis="sto6g",
+            basis=basis,
             verbose=4,
             unit=unit,
             symmetry=0,
@@ -55,12 +55,11 @@ mycc = cc.CCSD(mf)
 mycc.set_frozen()
 mycc.kernel()
 
-options =  {'n_blocks': 1000,
+options =  {'n_blocks': 600,
             'n_walkers': 300,
-            'nchol_chunk': 30,
-            'max_memory': 3000,
+            'max_memory': 8000,
             'seed': 17,
-            'trial': 'upt2ccsd',
+            'trial': 'upt2ccsd_bar',
             'mix_precision': False,
             }
 

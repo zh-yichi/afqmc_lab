@@ -41,38 +41,49 @@ mol = gto.M(atom = atomstring,
 
 mf = scf.UHF(mol).density_fit()
 mf = mf.x2c()
-mf.chkfile = './hsmf.chk'
+mf.chkfile = './mf.chk'
 mf.init_guess = 'chk'
 mf.level_shift = 0.5
 mf.max_cycle = 100
 mf.kernel()
 
-stable = False
-for i in range(10):
-    print(f'mf stability test {i+1}')
-    if not stable:
-        mo_i, _, stable,_ = mf.stability(return_status=True)
-        dm = mf.make_rdm1(mo_i,mf.mo_occ)
-        mf.kernel(dm0=dm)
-    elif stable:
-        print(f'mf energy: {mf.e_tot}, stability {stable}')
-        break
+#stable = False
+#for i in range(10):
+#    print(f'mf stability test {i+1}')
+#    if not stable:
+#        mo_i, _, stable,_ = mf.stability(return_status=True)
+#        dm = mf.make_rdm1(mo_i,mf.mo_occ)
+#        mf.kernel(dm0=dm)
+#    elif stable:
+#        print(f'mf energy: {mf.e_tot}, stability {stable}')
+#        break
 
-mycc = cc.CCSD(mf)
-mycc.set_frozen()
-mycc.kernel()
 
-options = {'n_prop_steps': 50,
-           'eql_time': 20,
+from pyscf.data import elements
+from afqmc.lno_afqmc import tools, lno_afqmc
+lo_coeff, frag_lolist, atm_center = tools.iao_localization(mf)
+
+from afqmc.lno_afqmc import cfs_afqmc
+options = {
+           'n_prop_steps': 50,
            'n_blocks': 100,
-           'n_walkers': 10,
-           'mix_precision': True,
+           'n_walkers': 300,
            'max_memory': 4000,
+           'mix_precision': False,
+           'n_batch': 1,
            'seed': 17,
            'walker_type': 'uhf',
-           'trial': 'upt2ccsd_bar',
+           'trial': 'upt2ccsd',
            }
 
-from afqmc import integral, launch_afqmc
-integral.prep_integral(mycc, chol_cut=1e-5)
-launch_afqmc.ph_afqmc(options)
+cfs_afqmc.run_afqmc(
+              mf, mf,
+              lo_coeff1 = lo_coeff, lo_coeff2 = lo_coeff,
+              frag_lolist1 = frag_lolist, frag_lolist2 = frag_lolist,
+              thresh1 = [1e-4, 1e-4], thresh2 = [1e-4, 3e-7],
+              nfrozen = elements.chemcore(mol),
+              qmc_options = options,
+              target_sto_error = 1e-4,
+              run_frag_list = [0],
+              atom_group = atm_center,
+              )

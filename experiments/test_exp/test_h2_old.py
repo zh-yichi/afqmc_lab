@@ -50,8 +50,8 @@ for a in bond_list:
                'mix_precision': False,
                'seed': 17,
                'walker_type': 'rhf',
-               'trial': 'pt2ccsd_cisd',
-               'free_projection': False,
+               'guide': 'rhf',
+               'trial': 'rhf',
                }
 
     from afqmc import integral, launch_afqmc

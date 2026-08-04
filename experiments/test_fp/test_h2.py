@@ -25,7 +25,7 @@ for a in bond_list:
     mol = gto.M(atom=atoms, basis="sto6g",spin=spin*nc, unit=unit, verbose=4)
     mol.build()
 
-    mf = scf.RHF(mol)#.density_fit()
+    mf = scf.UHF(mol)#.density_fit()
     mf.kernel()
 
     stable = False
@@ -43,17 +43,19 @@ for a in bond_list:
     mycc.set_frozen()
     mycc.kernel()
     
-    options = {'eql_time': 10,
-               'n_blocks': 100,
-               'n_walkers': 300,
-               'max_error': 0.0,
-               'mix_precision': False,
-               'seed': 17,
-               'walker_type': 'rhf',
-               'trial': 'pt2ccsd_cisd',
-               'free_projection': False,
-               }
+    options = {
+           'n_eql_blocks': 10,
+           'n_prop_steps': 50,
+           'n_trj': 100,
+           'n_walkers': 300,
+           'seed': 17,
+           'walker_type': 'uhf',
+           'trial': 'uhf',
+           'dt': 0.01,
+           'free_projection': True,
+           'use_gpu': True,
+           }
 
     from afqmc import integral, launch_afqmc
     integral.prep_integral(mycc, chol_cut=1e-5)
-    launch_afqmc.ph_afqmc(options)
+    launch_afqmc.fp_afqmc(options)

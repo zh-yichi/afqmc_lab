@@ -6,11 +6,11 @@ lno_list = [3e-4,1e-4,3e-5,1e-5]
 lno_thresh = lno_list[lno_num-1]
 
 ####  test H2 monomers ####
-a = 2 # bond length in a cluster
+a = 2.2 # bond length in a cluster
 d = 100 # distance between each cluster
 unit = 'b' # unit of length
 na = 2 # size of a cluster (monomer)
-nc = 10 # set as integer multiple of monomers
+nc = 2 # set as integer multiple of monomers
 spin = 0 # spin per monomer
 frozen = 0 # frozen orbital per monomer
 elmt = 'N'
@@ -35,30 +35,16 @@ mol = gto.M(atom=atoms,
 mf = scf.RHF(mol).density_fit()
 mf.kernel()
 
-# from pyscf.lno.tools import autofrag_iao
-# from pyscf import lo
-# import numpy as np
-# from pyscf.data import elements
-
-# frozen = elements.chemcore(mol)
-
-# # IAO localization
-# orbocc = mf.mo_coeff[:,frozen:np.count_nonzero(mf.mo_occ)]
-# lo_coeff = lo.iao.iao(mol, orbocc)
-# lo_coeff = lo.orth.vec_lowdin(lo_coeff, mf.get_ovlp())
-# moliao = lo.iao.reference_mol(mol)
-# frag_lolist = autofrag_iao(moliao)
-# # np.savez('./lo_coeff.npz', lo_coeff=lo_coeff)
-
+from pyscf.data import elements
 from afqmc.lno_afqmc import lno_afqmc, tools
 lo_coeff, frag_lolist, atm_center = tools.iao_localization(mf)
 
 options = {
-           'eql_time': 10,
+           'eql_time': 40,
            'n_prop_steps': 50,
-           'n_blocks': 50,
+           'n_blocks': 600,
            'n_walkers': 300,
-           'mix_precision': False,
+           'mix_precision': 'False',
            'seed': 17,
            'walker_type': 'rhf',
            'trial': 'pt2ccsd',
@@ -68,11 +54,11 @@ lno_afqmc.run_afqmc(
               mf,
               lo_coeff = lo_coeff,
               frag_lolist = frag_lolist,
-              nfrozen = frozen,
-              thresh = lno_thresh,
+              nfrozen = elements.chemcore(mol),
+              thresh = 0,
               qmc_options = options,
               chol_cut = 1e-5,
-              target_sto_error = 5e-4,
-              run_frg_list = [0],
+              target_sto_error = 1e-5,
+              run_frag_list = [0,1],
               atom_group = atm_center,
               )

@@ -6,9 +6,8 @@ options = {
            'mix_precision': False,
            'seed': 17,
            'walker_type': 'uhf',
-           'trial': 'upt2ccsd',
+           'trial': 'upt2ccsd_ad',
            }
-
 lno_afqmc.run_lnoafqmc(options)
 
 options = {
@@ -18,7 +17,6 @@ options = {
            'mix_precision': False,
            'seed': 17,
            'walker_type': 'uhf',
-           'trial': 'upt2ccsd_ad',
+           'trial': 'upt2ccsd',
            }
-
 lno_afqmc.run_lnoafqmc(options)

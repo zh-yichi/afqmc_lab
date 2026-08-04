@@ -7,10 +7,10 @@ lno_thresh = lno_list[lno_num-1]
 
 ####  test H2 monomers ####
 a = 1.20577 # bond length in a cluster
-d = 5 # distance between each cluster
+d = 100 # distance between each cluster
 unit = 'A' # unit of length
 na = 2 # size of a cluster (monomer)
-nc = 1 # set as integer multiple of monomers
+nc = 5 # set as integer multiple of monomers
 spin = 2 # spin per monomer
 elmt = 'O'
 basis = 'sto6g'
@@ -52,10 +52,10 @@ lo_coeff, frag_lolist, atm_center = tools.iao_localization(mf)
 from afqmc.lno_afqmc import lno_afqmc
 options = {
            'n_prop_steps': 50,
-           'n_blocks': 1000,
+           'n_blocks': 600,
            'n_walkers': 300,
            'max_memory': 2000,
-           'mix_precision': False,
+           'mix_precision': 'False',
            'n_batch': 1,
            'seed': 17,
            'walker_type': 'uhf',
@@ -69,7 +69,7 @@ lno_afqmc.run_afqmc(
               nfrozen = elements.chemcore(mol),
               thresh = lno_thresh,
               qmc_options = options,
-              target_sto_error = 1e-4,
-              run_frag_list = None,
+              target_sto_error = 2e-4,
+              run_frag_list = [0,1],
               atom_group = atm_center,
               )
