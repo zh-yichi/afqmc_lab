@@ -34,9 +34,7 @@ mol = gto.M(atom=atoms,
             max_memory=40000,
             )
 
-mf = scf.UHF(mol).density_fit()
-# mf.chkfile = './mf.chk'
-# mf.init_guess = 'chk'
+mf = scf.UHF(mol)
 mf.kernel()
 
 stable = False
@@ -55,7 +53,7 @@ mycc = cc.CCSD(mf)
 mycc.set_frozen()
 mycc.kernel()
 
-options =  {'n_blocks': 600,
+options =  {'n_blocks': 100,
             'n_walkers': 300,
             'max_memory': 8000,
             'seed': 17,

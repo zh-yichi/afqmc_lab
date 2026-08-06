@@ -15,19 +15,18 @@ for nc in m_list:
     atoms = ""
     for n in range(nc):
         shift = n*d
-        atoms += f'N {0.0+shift} 0.0 0.0     \n'
-        atoms += f'N {0.0+shift} 0.0 2.2 \n'
+        atoms += f'N {0.0+shift} 0.0 0.0 \n'
+        atoms += f'N {0.0+shift} 0.0 3.0 \n'
 
-    # nfrozen = 2*nc
     spin = 0
     mol = gto.M(atom=atoms, 
                 unit='b',
-                basis="sto6g", 
+                basis="ccpvdz", 
                 spin=spin, 
                 verbose=4)
     mol.build()
 
-    mf = scf.RHF(mol).density_fit()
+    mf = scf.UHF(mol)
     mf.kernel()
 
     stable = False
@@ -43,30 +42,38 @@ for nc in m_list:
 
     mycc = cc.CCSD(mf)
     mycc.set_frozen()
+    mycc.conv_tol = 1e-6
+    mycc.conv_tol_normt = 1e-5
     mycc.kernel()
 
+    from afqmc import integral, launch_afqmc
+
+    print("Reference PT2CCSD")
     options = {'eql_time': 40,
-               'n_blocks': 1200,
+               'n_blocks': 600,
                'n_walkers': 300,
-               'max_memory': 3000,
+               'max_memory': 30000,
                'seed': 17,
-               'walker_type': 'rhf',
-               'trial': 'pt2ccsd_bar',
-               'mix_precision': 'False',
+               'walker_type': 'uhf',
+               'trial': 'upt2ccsd_bar',
+               'mix_precision': True,
                }
 
-    from afqmc import integral, launch_afqmc
     integral.prep_integral(mycc)
     launch_afqmc.ph_afqmc(options)
 
-    options = {'n_blocks': 600,
-               'n_walkers': 300,
-               'max_memory': 3000,
-               'seed': 17,
-               'walker_type': 'rhf',
-               'trial': 'pt2ccsd_ad',
-               }
-
-    from afqmc import integral, launch_afqmc
-    #integral.prep_integral(mycc)
-    #launch_afqmc.ph_afqmc(options)
+    for i,t2_thresh in enumerate([3e-2,1e-2,3e-3,1e-3,1e-4,1e-5,1e-6]):
+        print(f"Rank Red. PT2CCSD thresh = {t2_thresh}")
+        options = {
+                'eql_time': 40,
+                'n_blocks': 600,
+                'n_walkers': 300,
+                'max_memory': 30000,
+                'seed': 17,
+                'walker_type': 'uhf',
+                'trial': 'upt2ccsd_red',
+                't2_thresh': t2_thresh,
+                'mix_precision': True,
+                }
+        launch_afqmc.ph_afqmc(options)
+        os.system(f"mv afqmc.out test_red_{i}.out")
