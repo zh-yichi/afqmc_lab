@@ -15,8 +15,8 @@ for nc in m_list:
     atoms = ""
     for n in range(nc):
         shift = n*d
-        atoms += f'H {0.0+shift} 0.0 0.0 \n'
-        atoms += f'H {0.0+shift} 0.0 2.0 \n'
+        atoms += f'N {0.0+shift} 0.0 0.0 \n'
+        atoms += f'N {0.0+shift} 0.0 3.0 \n'
 
     spin = 0
     mol = gto.M(atom=atoms, 
@@ -55,8 +55,8 @@ for nc in m_list:
                'max_memory': 3000,
                'seed': 17,
                'walker_type': 'rhf',
-               'guide': 'rhf',
-               'trial': 'rcisd',
+               'guide': 'rcisd',
+               'trial': 'rhf',
                'mix_precision': True,
                }
 
