@@ -13,19 +13,18 @@ options = {'eql_time': 20,
             'n_slater': 10,
             }
 
-launch_afqmc.ph_afqmc(options, script='run_afqmc_exp.py')
+#launch_afqmc.ph_afqmc(options, script='run_afqmc_exp.py')
 
 
-options = {'eql_time': 10,
-            'n_blocks': 100,
-            'n_walkers': 200,
+options = {'eql_time': 20,
+            'n_blocks': 600,
+            'n_walkers': 300,
             'max_memory': 3000,
             'seed': 17,
-            'walker_type': 'rhf',
-            'guide': 'rcisd',
+            'guide': 'rhf',
             'trial': 'rhf',
             'mix_precision': True,
             }
 
-# launch_afqmc.ph_afqmc(options, script='run_afqmc_exp.py')
+launch_afqmc.ph_afqmc(options, script='run_afqmc_exp.py')
 

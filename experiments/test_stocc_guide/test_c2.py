@@ -15,8 +15,8 @@ for nc in m_list:
     atoms = ""
     for n in range(nc):
         shift = n*d
-        atoms += f'N {0.0+shift} 0.0 0.0 \n'
-        atoms += f'N {0.0+shift} 0.0 3.0 \n'
+        atoms += f'C {0.0+shift} 0.0 0.0 \n'
+        atoms += f'C {0.0+shift} 0.0 2.0 \n'
 
     spin = 0
     mol = gto.M(atom=atoms, 
@@ -49,9 +49,9 @@ for nc in m_list:
     from afqmc import integral, launch_afqmc
 
     print("Reference PT2CCSD")
-    options = {'eql_time': 40,
+    options = {'eql_time': 20,
                'n_blocks': 100,
-               'n_walkers': 300,
+               'n_walkers': 100,
                'max_memory': 3000,
                'seed': 17,
                'walker_type': 'rhf',
