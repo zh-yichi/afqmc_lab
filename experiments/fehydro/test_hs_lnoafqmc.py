@@ -28,8 +28,8 @@ H -1.85653031374812 -1.23356353207299 2.011352050005
 
 mol = gto.M(atom = atomstring,
             basis = {
-                'default': 'sto6g',
-                'Fe': 'sto6g'
+                'default': 'ccpvdz',
+                'Fe': 'ccpvdz'
                 },
             verbose=4,
             unit='angstrom',
@@ -41,22 +41,22 @@ mol = gto.M(atom = atomstring,
 
 mf = scf.UHF(mol).density_fit()
 mf = mf.x2c()
-mf.chkfile = './mf.chk'
+mf.chkfile = './hsmf.chk'
 mf.init_guess = 'chk'
 mf.level_shift = 0.5
 mf.max_cycle = 100
 mf.kernel()
 
 stable = False
-for i in range(10):
-    print(f'mf stability test {i+1}')
-    if not stable:
-        mo_i, _, stable,_ = mf.stability(return_status=True)
-        dm = mf.make_rdm1(mo_i,mf.mo_occ)
-        mf.kernel(dm0=dm)
-    elif stable:
-        print(f'mf energy: {mf.e_tot}, stability {stable}')
-        break
+# for i in range(10):
+#     print(f'mf stability test {i+1}')
+#     if not stable:
+#         mo_i, _, stable,_ = mf.stability(return_status=True)
+#         dm = mf.make_rdm1(mo_i,mf.mo_occ)
+#         mf.kernel(dm0=dm)
+#     elif stable:
+#         print(f'mf energy: {mf.e_tot}, stability {stable}')
+#         break
 
 
 from pyscf.data import elements
@@ -64,11 +64,11 @@ from afqmc.lno_afqmc import tools, lno_afqmc
 lo_coeff, frag_lolist, atm_center = tools.iao_localization(mf)
 
 options = {
-           'eql_time': 50,
-           'n_blocks': 200,
-           'n_walkers': 300,
+           'eql_time': 5,
+           'n_blocks': 10,
+           'n_walkers': 10,
            'mix_precision': True,
-           'max_memory': 2000,
+           'max_memory': 10000,
            'seed': 17,
            'walker_type': 'uhf',
            'trial': 'upt2ccsd',

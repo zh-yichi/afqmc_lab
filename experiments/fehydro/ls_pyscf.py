@@ -39,11 +39,11 @@ mol = gto.M(atom = atomstring,
 mf = scf.UHF(mol).density_fit()
 mf = mf.x2c()
 mf.chkfile = 'lsmf.chk'
-# mf.init_guess = 'chk'
-dm0 = mf.from_chk('./hsmf.chk')
+mf.init_guess = 'chk'
+# dm0 = mf.from_chk('./hsmf.chk')
 mf.max_cycle = 100
 mf.level_shift = 0.5
-mf.kernel(dm0=dm0)
+mf.kernel()
 
 stable = False
 for i in range(10):
@@ -56,25 +56,25 @@ for i in range(10):
         print(f'mf energy: {mf.e_tot}, stability {stable}')
         break
 
-mycc = cc.CCSD(mf)
-mycc.set_frozen()
-mycc.level_shift = 0.5
-mycc.conv_tol = 1e-7
+# mycc = cc.CCSD(mf)
+# mycc.set_frozen()
+# mycc.level_shift = 0.5
+# mycc.conv_tol = 1e-6
 # mycc.conv_tol_normt = 1e-5
-mycc.max_cycle = 100
-mycc.kernel()
+# mycc.max_cycle = 100
+# mycc.kernel()
 
-options = {'n_prop_steps': 50,
-           'eql_time': 20,
-           'n_blocks': 100,
-           'n_walkers': 10,
-           'mix_precision': True,
-           'max_memory': 1000,
-           'seed': 17,
-           'walker_type': 'uhf',
-           'trial': 'upt2ccsd_bar',
-           }
+# options = {'n_prop_steps': 50,
+#            'eql_time': 20,
+#            'n_blocks': 100,
+#            'n_walkers': 10,
+#            'mix_precision': True,
+#            'max_memory': 1000,
+#            'seed': 17,
+#            'walker_type': 'uhf',
+#            'trial': 'upt2ccsd_bar',
+#            }
 
-from afqmc import integral, launch_afqmc
-integral.prep_integral(mycc, chol_cut=1e-5)
+# from afqmc import integral, launch_afqmc
+# integral.prep_integral(mycc, chol_cut=1e-5)
 #launch_afqmc.ph_afqmc(options)
