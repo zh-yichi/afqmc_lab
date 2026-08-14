@@ -8,7 +8,7 @@ options = {
            'walker_type': 'uhf',
            'trial': 'upt2ccsd_ad',
            }
-lno_afqmc.run_lnoafqmc(options)
+#lno_afqmc.run_lnoafqmc(options)
 
 options = {
            'eql_time': 10,

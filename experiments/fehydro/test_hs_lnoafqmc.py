@@ -28,8 +28,8 @@ H -1.85653031374812 -1.23356353207299 2.011352050005
 
 mol = gto.M(atom = atomstring,
             basis = {
-                'default': 'ccpvdz',
-                'Fe': 'ccpvdz'
+                'default': 'cc-pvdz-dk',
+                'Fe': 'cc-pvtz-dk'
                 },
             verbose=4,
             unit='angstrom',
@@ -41,7 +41,7 @@ mol = gto.M(atom = atomstring,
 
 mf = scf.UHF(mol).density_fit()
 mf = mf.x2c()
-mf.chkfile = './hsmf.chk'
+mf.chkfile = './hs_tdz_mf.chk'
 mf.init_guess = 'chk'
 mf.level_shift = 0.5
 mf.max_cycle = 100
@@ -64,8 +64,8 @@ from afqmc.lno_afqmc import tools, lno_afqmc
 lo_coeff, frag_lolist, atm_center = tools.iao_localization(mf)
 
 options = {
-           'eql_time': 5,
-           'n_blocks': 10,
+           'eql_time': 10,
+           'n_blocks': 100,
            'n_walkers': 10,
            'mix_precision': True,
            'max_memory': 10000,
@@ -81,7 +81,7 @@ lno_afqmc.run_afqmc(
               lo_coeff = lo_coeff,
               frag_lolist = frag_lolist,
               nfrozen = elements.chemcore(mol),
-              thresh = 1e-5,
+              thresh = 1e-4,
               qmc_options = options,
               chol_cut = 1e-5,
               target_sto_error = 2e-4,
