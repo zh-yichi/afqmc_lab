@@ -6,7 +6,7 @@ lno_list = [3e-4,1e-4,3e-5,1e-5]
 lno_thresh = lno_list[lno_num-1]
 
 ####  test H2 monomers ####
-a = 2.6 # bond length in a cluster
+a = 2.2 # bond length in a cluster
 d = 100 # distance between each cluster
 unit = 'b' # unit of length
 na = 2 # size of a cluster (monomer)
@@ -35,9 +35,8 @@ mol = gto.M(atom=atoms,
 mf = scf.RHF(mol).density_fit()
 mf.kernel()
 
-from pyscf.data import elements
 from afqmc.lno_afqmc import lno_afqmc, tools
-lo_coeff, frag_lolist, atm_center = tools.iao_localization(mf)
+lo_coeff, frag_list, frag_name = tools.iao_fragment(mf, frag_type='h2heavy', more_loc='pm')
 
 options = {
            'eql_time': 10,
@@ -51,14 +50,18 @@ options = {
            }
 
 lno_afqmc.run_afqmc(
-              mf,
-              lo_coeff = lo_coeff,
-              frag_lolist = frag_lolist,
-              nfrozen = elements.chemcore(mol),
-              thresh = 0,
-              qmc_options = options,
-              chol_cut = 1e-6,
-              target_sto_error = 1e-5,
-              run_frag_list = [0],
-              atom_group = atm_center,
-              )
+    mf,
+    lo_coeff, 
+    frag_list,
+    frag_name,
+    lno_thresh = 1e-6,
+    qmc_options = options, 
+    chol_cut = 1e-5, 
+    target_qmc_err = 1e-3, 
+    run_frag = [0,1], 
+    nfrozen = None,
+    run_mp = True,
+    run_cc = True,
+    run_qmc = True,
+    plot_las = False,
+    )

@@ -45,8 +45,7 @@ while not stable:
         break
 
 from afqmc.lno_afqmc import lno_afqmc, tools
-from pyscf.data import elements
-lo_coeff, frag_lolist, atm_center = tools.iao_localization(mf)
+lo_coeff, frag_list, frag_name = tools.iao_fragment(mf, frag_type='h2heavy', more_loc='pm')
 
 
 from afqmc.lno_afqmc import lno_afqmc
@@ -63,13 +62,18 @@ options = {
            }
 
 lno_afqmc.run_afqmc(
-              mf,
-              lo_coeff = lo_coeff,
-              frag_lolist = frag_lolist,
-              nfrozen = elements.chemcore(mol),
-              thresh = lno_thresh,
-              qmc_options = options,
-              target_sto_error = 2e-4,
-              run_frag_list = [0,1],
-              atom_group = atm_center,
-              )
+    mf,
+    lo_coeff, 
+    frag_list,
+    frag_name,
+    lno_thresh = 1e-6,
+    qmc_options = options, 
+    chol_cut = 1e-5, 
+    target_qmc_err = 1e-3, 
+    run_frag = [0,1], 
+    nfrozen = None,
+    run_mp = True,
+    run_cc = True,
+    run_qmc = True,
+    plot_las = False,
+    )

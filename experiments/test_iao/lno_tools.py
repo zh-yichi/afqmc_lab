@@ -129,11 +129,11 @@ def check_span(mf, lo_coeff_occ, frozen=0, thresh=1e-8):
     else:
         raise TypeError(f'unsupported mean-field type: {type(mf)}')
 
-    print(f'LO occ span the occupied MO occ space - {span12}.\n'
-          f'MO occ span the occupied LO occ space - {span21}.')
+    print(f'LO span the MO occ space - {span12}.\n'
+          f'MO occ span the LO space - {span21}.')
     
     if not span12:
-        raise ValueError(f"LOs DO NOT SPAN MOs, CHECK THE LOCALIZATION!!!"
+        raise ValueError(f"LO DO NOT SPAN MO occ, CHECK THE LOCALIZATION!!!"
                          f"the projection lost are {p12} {p21}")
     
     return None
