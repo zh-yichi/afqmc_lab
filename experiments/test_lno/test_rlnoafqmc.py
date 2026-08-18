@@ -58,7 +58,7 @@ lno_afqmc.run_afqmc(
     qmc_options = options, 
     chol_cut = 1e-5, 
     target_qmc_err = 1e-3, 
-    run_frag = [0,1], 
+    run_frag = None, 
     nfrozen = None,
     run_mp = True,
     run_cc = True,
