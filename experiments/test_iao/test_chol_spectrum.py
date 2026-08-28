@@ -1,8 +1,5 @@
-import numpy as np
-from pyscf import gto, scf, cc, lib
-
-import jax
-jax.config.update("jax_enable_x64", True)
+from pyscf import gto, scf
+from afqmc.lno_afqmc import cholesky_spectrum
 
 atomstring = '''
 Fe -0.64147387529051 0.51990405379180 0.11450483185168
@@ -25,26 +22,24 @@ H 0.57998322602479 2.26642229799559 -1.78148703231078
 H -0.47668197075682 1.85673194452426 2.61208351578631
 H -1.85653031374812 -1.23356353207299 2.011352050005
 '''
-
 mol = gto.M(atom = atomstring,
             basis = {
-                'default': 'sto6g',
-                'Fe': 'sto6g'
+                'default': 'ccpvdz-dk',
+                'Fe': 'ccpwcvtz-dk'
                 },
-            verbose=4,
-            unit='angstrom',
-            symmetry=0,
-            charge=2,
-            spin=4,
-            max_memory=10000,
+            verbose = 4,
+            unit = 'angstrom',
+            symmetry = 0,
+            charge = 2,
+            spin = 4,
+            max_memory = 20000,
             )
 
 mf = scf.UHF(mol).density_fit()
 mf = mf.x2c()
-mf.chkfile = './hsmf.chk'
-mf.init_guess = 'chk'
-mf.level_shift = 0.5
 mf.max_cycle = 100
+mf.level_shift = 0.5
+mf = mf.newton()
 mf.kernel()
 
 stable = False
@@ -53,26 +48,30 @@ for i in range(10):
     if not stable:
         mo_i, _, stable,_ = mf.stability(return_status=True)
         dm = mf.make_rdm1(mo_i,mf.mo_occ)
+        mf = mf.newton()
         mf.kernel(dm0=dm)
     elif stable:
         print(f'mf energy: {mf.e_tot}, stability {stable}')
         break
 
-mycc = cc.CCSD(mf)
-mycc.set_frozen()
-mycc.kernel()
+from afqmc.lno_afqmc import cholesky_spectrum, tools
+lo_coeff, frag_list, frag_name = tools.iao_fragment(
+    mf, 
+    frag_type='h2heavy', 
+    more_loc=None,
+    x2c = True, 
+    save2='./iao.h5', 
+    read_from=None,
+    )
 
-options = {'n_prop_steps': 50,
-           'eql_time': 20,
-           'n_blocks': 100,
-           'n_walkers': 10,
-           'mix_precision': True,
-           'max_memory': 4000,
-           'seed': 17,
-           'walker_type': 'uhf',
-           'trial': 'upt2ccsd_bar',
-           }
-
-from afqmc import integral, launch_afqmc
-integral.prep_integral(mycc, chol_cut=1e-5)
-launch_afqmc.ph_afqmc(options)
+cholesky_spectrum.run_lno2get_chol(
+    mf,
+    lo_coeff, 
+    frag_list,
+    frag_name,
+    lno_thresh = 1e-5,
+    chol_cut = 1e-5, 
+    run_frag = [6], 
+    nfrozen = None,
+    spectrum_plt="cderi_spectrum.png",
+    )

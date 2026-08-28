@@ -57,8 +57,8 @@ options =  {'n_blocks': 100,
             'n_walkers': 300,
             'max_memory': 8000,
             'seed': 17,
-            'trial': 'upt2ccsd_bar',
-            'mix_precision': False,
+            'trial': 'upt2ccsd_cisd',
+            'mix_precision': True,
             }
 
 from afqmc import integral, launch_afqmc
