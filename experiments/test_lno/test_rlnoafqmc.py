@@ -7,7 +7,7 @@ lno_thresh = lno_list[lno_num-1]
 
 ####  test H2 monomers ####
 a = 2.2 # bond length in a cluster
-d = 100 # distance between each cluster
+d = 5 # distance between each cluster
 unit = 'b' # unit of length
 na = 2 # size of a cluster (monomer)
 nc = 2 # set as integer multiple of monomers
@@ -58,7 +58,7 @@ lno_afqmc.run_afqmc(
     qmc_options = options, 
     chol_cut = 1e-5, 
     target_qmc_err = 1e-3, 
-    run_frag = None, 
+    run_frag = [0], 
     nfrozen = None,
     run_mp = True,
     run_cc = True,

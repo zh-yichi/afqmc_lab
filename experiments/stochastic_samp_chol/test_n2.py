@@ -21,7 +21,7 @@ for nc in m_list:
     spin = 0
     mol = gto.M(atom=atoms, 
                 unit='b',
-                basis="ccpvqz", 
+                basis="ccpvtz", 
                 spin=spin, 
                 verbose=4)
     mol.build()
@@ -51,7 +51,7 @@ for nc in m_list:
     print("Reference PT2CCSD")
     options = {'eql_time': 10,
                'n_blocks': 10,
-               'n_walkers': 5,
+               'n_walkers': 1,
                'max_memory': 30000,
                'seed': 17,
                'walker_type': 'uhf',
@@ -61,17 +61,3 @@ for nc in m_list:
 
     integral.prep_integral(mycc)
     launch_afqmc.ph_afqmc(options)
-
-    options = {
-            'eql_time': 10,
-            'n_blocks': 10,
-            'n_walkers': 5,
-            'max_memory': 30000,
-            'seed': 17,
-            'walker_type': 'uhf',
-            'trial': 'upt2ccsd_red',
-            't2_thresh': 0.01,
-            'mix_precision': True,
-            }
-    launch_afqmc.ph_afqmc(options)
-    os.system(f"mv afqmc.out test_red_{i}.out")

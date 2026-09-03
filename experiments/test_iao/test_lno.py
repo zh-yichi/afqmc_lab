@@ -24,7 +24,7 @@ dm0 = mf.from_chk(path2chk)
 mf.max_cycle = 100
 mf.kernel(dm0=dm0)
 
-from afqmc.lno_afqmc import lno_afqmc_test, tools
+from afqmc.lno_afqmc import lno_afqmc, tools
 lo_coeff, frag_list, frag_name = tools.iao_fragment(
     mf, 
     frag_type='h2heavy', 
@@ -36,10 +36,10 @@ lo_coeff, frag_list, frag_name = tools.iao_fragment(
 
 options = {'eql_time': 10,
            'n_prop_steps': 50,
-           'n_blocks': 10,
+           'n_blocks': 200,
         #    'frozen_vir': 10,
         #    'n_corr_blocks': 50,
-           'n_walkers': 1,
+           'n_walkers': 50,
            'max_memory': 10000,
            'mix_precision': True,
            'n_batch': 1,
@@ -48,19 +48,16 @@ options = {'eql_time': 10,
            'trial': 'upt2ccsd',
            }
 
-# script = 'run_lno_afqmc_pt2ccsd_frozen_vir.py'
-script = None
-
-lno_afqmc_test.run_afqmc(
+lno_afqmc.run_afqmc(
     mf,
     lo_coeff, 
     frag_list,
     frag_name,
     lno_thresh = 1e-5,
     qmc_options = options, 
-    chol_cut = 1e-5, 
+    chol_cut = 3e-5, 
     target_qmc_err = 1e-3, 
-    run_frag = None, 
+    run_frag = [0], 
     nfrozen = None,
     run_mp = True,
     run_cc = True,
